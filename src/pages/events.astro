@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import EventCard from '../components/EventCard.astro';
+import { site } from '../data/site';
+import { byDateDesc, isUpcoming } from '../lib/format';
+
+const events = await getCollection('events');
+const upcoming = events.filter((e) => isUpcoming(e.data.date)).sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const past = events.filter((e) => !isUpcoming(e.data.date)).sort(byDateDesc);
+---
+
+<Base title="演出" description={`${site.name} ${site.nameZh} 的近期演出與過往演出紀錄。`}>
+  <header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Shows</span>
+      <h1 class="display"><span class="zh">演出活動</span></h1>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="display"><span class="zh">近期演出</span></h2>
+      </div>
+      {
+        upcoming.length ? (
+          <div class="list">
+            {upcoming.map((e) => (
+              <EventCard event={e} />
+            ))}
+          </div>
+        ) : (
+          <p class="empty">
+            目前沒有公布的演出。追蹤{' '}
+            <a href={site.social.instagram} target="_blank" rel="noopener">
+              Instagram
+            </a>{' '}
+            搶先知道下一場在哪裡！
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    past.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="display">
+              <span class="zh">過往演出</span>
+            </h2>
+          </div>
+          <div class="list">
+            {past.map((e) => (
+              <EventCard event={e} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .empty a {
+    color: var(--amber);
+  }
+</style>

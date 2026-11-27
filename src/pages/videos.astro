@@ -1,0 +1,77 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import VideoCard from '../components/VideoCard.astro';
+import { site, videoCategories } from '../data/site';
+import { byDateDesc } from '../lib/format';
+
+const videos = (await getCollection('videos')).sort(byDateDesc);
+const groups = (Object.keys(videoCategories) as (keyof typeof videoCategories)[])
+  .map((key) => ({ key, label: videoCategories[key], items: videos.filter((v) => v.data.category === key) }))
+  .filter((g) => g.items.length);
+---
+
+<Base title="影音" description={`${site.name} ${site.nameZh} 的 MV、歌詞影片、個人作品與《Don't Stop Talk》。`}>
+  <header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Videos</span>
+      <h1 class="display"><span class="zh">影音作品</span></h1>
+      <p class="lead">
+        更多影片請到 <a href={site.social.youtube} target="_blank" rel="noopener">YouTube 頻道</a>，記得按下訂閱。
+      </p>
+      <nav class="jump" aria-label="影片分類">
+        {groups.map((g) => <a href={`#${g.key}`}>{g.label}</a>)}
+      </nav>
+    </div>
+  </header>
+
+  {
+    groups.map((g) => (
+      <section class="section" id={g.key}>
+        <div class="container">
+          <div class="section-head">
+            <h2 class="display">
+              <span class="zh">{g.label}</span>
+            </h2>
+          </div>
+          <div class="grid">
+            {g.items.map((v) => (
+              <VideoCard id={v.id} title={v.data.title} date={v.data.date} />
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .lead a {
+    color: var(--amber);
+  }
+
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.8rem;
+  }
+
+  .jump a {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  .jump a:hover {
+    border-color: var(--orange);
+    color: var(--amber);
+  }
+
+  .section {
+    scroll-margin-top: 70px;
+  }
+</style>

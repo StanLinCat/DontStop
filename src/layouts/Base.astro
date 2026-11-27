@@ -1,0 +1,283 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { site, nav } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title}｜${site.name} ${site.nameZh}` : `${site.name} ${site.nameZh}｜${site.tagline}`;
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const ogImage = new URL('/favicon.png', Astro.site).href;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="zh_TW" />
+    <meta name="theme-color" content="#0e0d0c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+TC:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+
+    <header class="site-header">
+      <div class="container bar">
+        <a class="brand" href="/" aria-label={`${site.name} ${site.nameZh} 首頁`}>
+          <Image src={logo} alt="" width={44} height={44} loading="eager" />
+          <span class="brand-text">
+            <span class="brand-en">{site.name}</span>
+            <span class="brand-zh">{site.nameZh}</span>
+          </span>
+        </a>
+        <nav aria-label="主選單">
+          <ul>
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container foot">
+        <div class="foot-brand">
+          <Image src={logo} alt="" width={64} height={64} />
+          <div>
+            <p class="foot-name">{site.name} {site.nameZh}</p>
+            <p class="foot-slogan">{site.slogan.join('　')}</p>
+          </div>
+        </div>
+        <ul class="foot-links">
+          <li><a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href={site.social.youtube} target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href={site.social.threads} target="_blank" rel="noopener">Threads</a></li>
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        </ul>
+      </div>
+      <div class="container foot-bottom">
+        <p>© {year} {site.name} {site.nameZh}</p>
+        <p>
+          合作夥伴：<a href={site.partner.url} target="_blank" rel="noopener">{site.partner.name}</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--amber);
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  .skip:focus {
+    top: 1rem;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(14, 13, 12, 0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 68px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .brand-en {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    transform: skewX(var(--skew));
+    color: var(--amber);
+  }
+
+  .brand-zh {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    display: block;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--muted);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  nav a:hover {
+    color: var(--text);
+  }
+
+  nav a[aria-current='page'] {
+    color: #120a04;
+    background: var(--orange);
+  }
+
+  @media (max-width: 760px) {
+    .bar {
+      flex-direction: column;
+      align-items: stretch;
+      padding-block: 0.6rem;
+      gap: 0.4rem;
+    }
+    .brand-text {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 0.6rem;
+    }
+    nav {
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: -0.5rem;
+    }
+    nav ul {
+      width: max-content;
+    }
+    nav a {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.75rem;
+    }
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    padding-top: 3rem;
+    font-size: 0.95rem;
+  }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding-bottom: 2rem;
+  }
+
+  .foot-brand {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .foot-name {
+    margin: 0;
+    font-weight: 900;
+  }
+
+  .foot-slogan {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .foot-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    align-items: center;
+  }
+
+  .foot-links a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .foot-links a:hover {
+    color: var(--amber);
+  }
+
+  .foot-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    border-top: 1px solid var(--line);
+    padding-block: 1.2rem 1.6rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .foot-bottom p {
+    margin: 0;
+  }
+
+  .foot-bottom a {
+    color: var(--text);
+  }
+</style>

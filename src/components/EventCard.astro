@@ -1,0 +1,154 @@
+---
+import { Image } from 'astro:assets';
+import { render, type CollectionEntry } from 'astro:content';
+import { formatDate, isUpcoming } from '../lib/format';
+
+interface Props {
+  event: CollectionEntry<'events'>;
+  showBody?: boolean;
+}
+
+const { event, showBody = true } = Astro.props;
+const { title, date, time, venue, address, role, link, cover, coverAlt } = event.data;
+const upcoming = isUpcoming(date);
+const { Content } = await render(event);
+---
+
+<article class="event card">
+  {
+    cover && (
+      <div class="cover">
+        <Image src={cover} alt={coverAlt ?? title} widths={[320, 480]} sizes="(max-width: 700px) 100vw, 280px" />
+      </div>
+    )
+  }
+  <div class="body">
+    <div class="tags">
+      <span class:list={['tag', upcoming ? 'tag-live' : 'tag-past']}>{upcoming ? '即將登場' : '演出回顧'}</span>
+      {role && <span class="tag">{role}</span>}
+    </div>
+    <h3>{title}</h3>
+    <dl>
+      <div>
+        <dt>日期</dt>
+        <dd>
+          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+          {time && <span>　{time}</span>}
+        </dd>
+      </div>
+      <div>
+        <dt>地點</dt>
+        <dd>
+          {venue}
+          {address && <span class="addr">{address}</span>}
+        </dd>
+      </div>
+    </dl>
+    {
+      showBody && (
+        <div class="prose">
+          <Content />
+        </div>
+      )
+    }
+    {
+      link && (
+        <a class="link-arrow" href={link} target="_blank" rel="noopener">
+          活動詳情 →
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .event {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+  }
+
+  @media (max-width: 700px) {
+    .event {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .cover {
+    background: #000;
+  }
+
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-height: 420px;
+  }
+
+  .body {
+    padding: clamp(1.3rem, 3vw, 2rem);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .tag {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .tag-live {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #120a04;
+  }
+
+  .tag-past {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  h3 {
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    line-height: 1.35;
+    margin: 0 0 1rem;
+    font-weight: 900;
+  }
+
+  dl {
+    margin: 0 0 1.2rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  dl div {
+    display: flex;
+    gap: 1rem;
+  }
+
+  dt {
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .addr {
+    display: block;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .prose {
+    color: #d9d3ca;
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="找不到頁面">
+  <section class="section">
+    <div class="container nf">
+      <p class="display code">404</p>
+      <h1>這一頁不見了，但音樂不會停</h1>
+      <a class="btn btn-primary" href="/">回到首頁</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    text-align: center;
+    padding-block: 3rem;
+  }
+  .code {
+    font-size: clamp(6rem, 20vw, 11rem);
+    color: var(--amber);
+    text-shadow: 6px 6px 0 var(--orange-deep);
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 1.5rem 0 2rem;
+  }
+</style>
