@@ -33,7 +33,7 @@ const { Content } = await render(event);
         <dt>日期</dt>
         <dd>
           <time datetime={date.toISOString()}>{formatDate(date)}</time>
-          {time && <span>　{time}</span>}
+          {time && <span class="time">{time}</span>}
         </dd>
       </div>
       <div>
@@ -140,6 +140,13 @@ const { Content } = await render(event);
 
   dd {
     margin: 0;
+  }
+
+  /* 時間整段不拆開：放不下時整個換到下一行，不會變成「15:00–」/「15:40」 */
+  .time {
+    display: inline-block;
+    margin-left: 0.8em;
+    white-space: nowrap;
   }
 
   .addr {
