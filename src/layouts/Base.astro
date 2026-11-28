@@ -13,7 +13,8 @@ const { title, description = site.description } = Astro.props;
 const fullTitle = title ? `${title}｜${site.name} ${site.nameZh}` : `${site.name} ${site.nameZh}｜${site.tagline}`;
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
-const ogImage = new URL('/favicon.png', Astro.site).href;
+// 分享到 LINE／Facebook 時的預覽圖（1200×630）。換圖直接覆蓋 public/og.jpg
+const ogImage = new URL('/og.jpg', Astro.site).href;
 const year = new Date().getFullYear();
 ---
 
@@ -29,8 +30,14 @@ const year = new Date().getFullYear();
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={new URL(path, Astro.site)} />
+    <meta property="og:site_name" content={`${site.name} ${site.nameZh}`} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} ${site.nameZh}`} />
     <meta property="og:locale" content="zh_TW" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0e0d0c" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
