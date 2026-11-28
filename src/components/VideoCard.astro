@@ -84,4 +84,43 @@ const { id, title, date } = Astro.props;
     font-size: 0.85rem;
     color: var(--muted);
   }
+
+  /* 手機：改成左圖右文的橫式小卡。原本一支影片佔掉大半個螢幕，影音頁要滑很久 */
+  @media (max-width: 600px) {
+    .video {
+      flex-direction: row;
+      align-items: center;
+    }
+    .thumb {
+      flex: 0 0 42%;
+      align-self: stretch;
+      aspect-ratio: 16 / 9;
+    }
+    .play {
+      inset: auto 0.4rem 0.4rem auto;
+      width: 1.9rem;
+      height: 1.9rem;
+    }
+    .play svg {
+      width: 16px;
+      height: 16px;
+    }
+    .meta {
+      min-width: 0;
+      padding: 0.6rem 0.85rem;
+    }
+    h3 {
+      font-size: 0.9rem;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+    }
+    time {
+      margin-top: 0.2rem;
+      font-size: 0.78rem;
+    }
+  }
 </style>
