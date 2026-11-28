@@ -142,10 +142,13 @@ const { Content } = await render(event);
     margin: 0;
   }
 
-  /* 時間整段不拆開：放不下時整個換到下一行，不會變成「15:00–」/「15:40」 */
+  /* 時間整段不拆開：放不下時整個換到下一行，不會變成「15:00–」/「15:40」，換行後也不會縮排 */
+  dd:has(.time) {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.8em;
+  }
   .time {
-    display: inline-block;
-    margin-left: 0.8em;
     white-space: nowrap;
   }
 
