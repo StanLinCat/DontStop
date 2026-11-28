@@ -67,6 +67,27 @@ const year = new Date().getFullYear();
       </div>
     </header>
 
+    <script>
+      // 手機選單放不下時：加上邊緣淡出，並把目前頁面的項目捲到看得見的位置
+      const navEl = document.querySelector<HTMLElement>('.site-header nav');
+      if (navEl) {
+        const update = () => {
+          const max = navEl.scrollWidth - navEl.clientWidth;
+          navEl.classList.toggle('more-left', max > 1 && navEl.scrollLeft > 1);
+          navEl.classList.toggle('more-right', max > 1 && navEl.scrollLeft < max - 1);
+        };
+        const current = navEl.querySelector<HTMLElement>('[aria-current="page"]');
+        if (current && navEl.scrollWidth > navEl.clientWidth) {
+          const n = navEl.getBoundingClientRect();
+          const c = current.getBoundingClientRect();
+          navEl.scrollLeft += c.left - n.left - (n.width - c.width) / 2;
+        }
+        update();
+        navEl.addEventListener('scroll', update, { passive: true });
+        addEventListener('resize', update);
+      }
+    </script>
+
     <main id="main">
       <slot />
     </main>
@@ -186,29 +207,50 @@ const year = new Date().getFullYear();
     background: var(--orange);
   }
 
+  /* 手機：頂部列縮成一行（logo＋選單），原本兩行約 109px，現在約 56px，內容多露出一截。
+     選單放不下時可以左右滑，邊緣會淡出提示還有項目，目前頁面的項目會自動捲到看得見的位置。 */
   @media (max-width: 760px) {
     .bar {
-      flex-direction: column;
-      align-items: stretch;
-      padding-block: 0.6rem;
-      gap: 0.4rem;
+      min-height: 56px;
+      gap: 0.5rem;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
     }
     .brand-text {
-      flex-direction: row;
-      align-items: baseline;
-      gap: 0.6rem;
+      display: none;
     }
     nav {
+      display: flex;
+      min-width: 0;
       overflow-x: auto;
       scrollbar-width: none;
-      margin-inline: -0.5rem;
+      margin-right: -0.4rem;
+    }
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+    /* 只在那一側還有項目時淡出 */
+    nav.more-left {
+      mask-image: linear-gradient(90deg, transparent, #000 24px);
+    }
+    nav.more-right {
+      mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    }
+    nav.more-left.more-right {
+      mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 28px), transparent);
     }
     nav ul {
+      flex-shrink: 0;
       width: max-content;
+      margin-left: auto;
+      gap: 0.1rem;
     }
     nav a {
       font-size: 0.9rem;
-      padding: 0.4rem 0.75rem;
+      padding: 0.45rem 0.7rem;
+      white-space: nowrap;
     }
   }
 
